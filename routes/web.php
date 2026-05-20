@@ -3,12 +3,24 @@
 use Illuminate\Support\Facades\Route;
 
 Route::controller(\App\Http\Controllers\AuthController::class)
+    ->middleware("guest")
     ->group(function () {
-        Route::get("login", 'LoginView')->name("login");
-        Route::post("login", "Login")->name("login.store");
-        Route::get("register", "RegisterView")->name("register");
-        Route::post("register" , "Register")->name("register.store");
-        Route::post("logout", "Logout")->name("logout");
+        Route::prefix("login")
+            ->name("login")
+            ->group(function () {
+                Route::get("", 'LoginView')->name("");
+                Route::post("", "Login")->name(".store");
+            });
+        Route::prefix("register")
+            ->name("register")
+            ->group(function () {
+                Route::get("", "RegisterView")->name("");
+                Route::post("", "Register")->name(".store");
+            });
+
+        Route::post("logout", "Logout")->name("logout")
+            ->withoutMiddleware("guest")
+            ->middleware("auth");
     });
 
 Route::get("/", \App\Http\Controllers\MainController::class)->name("main");
